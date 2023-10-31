@@ -1,7 +1,7 @@
 ---
 - hosts: ec2-instance
 
-  become: false
+  become: true
   tasks:
     - name: Install required system packages
       apt:
@@ -13,7 +13,6 @@
           - python3-pip
           - virtualenv
           - python3-setuptools
-          - amazon-ecr-credential-helper
         state: latest
         update_cache: true
 
@@ -42,10 +41,19 @@
       file:
         path: "/myfile"
         state: directory
-        
-    - name: login to aws
-      shell: aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 998171272878.dkr.ecr.us-east-1.amazonaws.com
-      
-    - name: pull an image
-      command: docker pull 998171272878.dkr.ecr.us-east-1.amazonaws.com/docker-repository-comit-2023:latest
+    - name: "Copying local files"
+      copy:
+        src: "index.html"
+        dest: "/myfile/"
+    - name: Creating container using HTTPD Image
+      docker_container:
+        name: "MyWebServer3"
+        image: "httpd"
+        state: started
+        exposed_ports:
+        - "80"
+        ports:
+        - "80:80"
+        volumes:
+        - /myfile:/usr/local/apache2/htdocs/
 
