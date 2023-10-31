@@ -13,7 +13,6 @@
           - python3-pip
           - virtualenv
           - python3-setuptools
-          - amazon-ecr-credential-helper
         state: latest
         update_cache: true
 
@@ -46,23 +45,18 @@
       copy:
         src: "index.html"
         dest: "/myfile/"
-    - name: Download AWS CLI bundle.
-      shell: "cd /tmp && rm -rf /tmp/awscli* && curl 'https://s3.amazonaws.com/aws-cli/awscli-bundle.zip' -o 'awscli-bundle.zip'"
- 
-    - name: Update repositories cache and install "unzip" package
-      apt:
-        name: unzip
-        update_cache: yes
- 
-    - name: Unzip AWS CLI bundle.
-      shell: "cd /tmp && unzip awscli-bundle.zip"
- 
-    - name: Run AWS CLI installer.
-      shell: "/tmp/awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws"
- 
+    - name: Creating container using HTTPD Image
+      docker_container:
+        name: "MyWebServer3"
+        image: "httpd"
+        state: started
+        exposed_ports:
+        - "80"
+        ports:
+        - "80:80"
+        volumes:
+        - /myfile:/usr/local/apache2/htdocs/
     - name: pull an image
       docker_image:
         name: 998171272878.dkr.ecr.us-east-1.amazonaws.com/docker-repository-comit-2023:latest
         source: pull
-   # - name: Log into aws ecr docker registry
-   #   shell: "$(/usr/local/bin/aws ecr get-login --no-include-email --region us-east-1)"
