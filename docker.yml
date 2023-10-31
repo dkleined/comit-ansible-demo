@@ -58,4 +58,4 @@
         - /myfile:/usr/local/apache2/htdocs/
     - name: pull an image
       docker_image: 998171272878.dkr.ecr.us-east-1.amazonaws.com/docker-repository-comit-2023:latest
-        name: docker-repository-comit-2023:latest
+
