@@ -13,6 +13,7 @@
           - python3-pip
           - virtualenv
           - python3-setuptools
+          - python
         state: latest
         update_cache: true
 
@@ -45,35 +46,32 @@
       copy:
         src: "index.html"
         dest: "/myfile/"
-    - name: Creating container using HTTPD Image
-      docker_container:
-        name: "MyWebServer3"
-        image: "httpd"
-        state: started
-        exposed_ports:
-        - "80"
-        ports:
-        - "80:80"
-        volumes:
-        - /myfile:/usr/local/apache2/htdocs/
-    - name: Get instance profile info
-      amazon.aws.aws_caller_info:
-      register: aws_info
 
-    - set_fact:
-        ecr_registry_url: "998171272878.dkr.ecr.us-east-1.amazonaws.com/docker-repository-comit-2023"
+    - name: Download the awscli bundle.
+      get_url: url=https://s3.amazonaws.com/aws-cli/awscli-bundle.zip dest=/tmp/awscli-bundle.zip
+      register: aws_cli_download_bundle
 
-    - name: Get ECR token
-      shell: "aws ecr get-login-password --region eu-east-1"
-      register: ecr_token
+    - name: Unarchive the installer.
+      unarchive: src=/tmp/awscli-bundle.zip dest=/tmp copy=no creates=/tmp/awscli-bundle
+      when: aws_cli_download_bundle.changed
+      register: aws_cli_unarchive_installer
 
-    - name: Log into ECR registry
-      docker_login:
-        registry_url: "998171272878.dkr.ecr.us-east-1.amazonaws.com/docker-repository-comit-2023"
-        debug: yes
-        username: "AWS"
-        password: "{{ ecr_token.stdout }}"
-        reauthorize: yes
+    - name: Install awscli package.
+      shell: python /tmp/awscli-bundle/install -i /usr/local/aws -b /usr/bin/aws
+      args:
+        creates: /usr/bin/aws
+      when: aws_cli_unarchive_installer.changed
+
+    - name: Configure AWS.
+      shell: aws configure set {{ item.key }} {{ item.value }} --profile {{ aws_profile }}
+      no_log: True
+      with_dict:
+        aws_access_key_id: "{{ aws_access_key }}"
+        aws_secret_access_key: "{{ aws_secret_key }}"
+        region: "{{ aws_region }}"
+        format: "{{ aws_format }}"
+      become_user: "{{ aws_system_user }}"
+      changed_when: false
     #- name: pull an image
     #  docker_image:
     #    name: 998171272878.dkr.ecr.us-east-1.amazonaws.com/docker-repository-comit-2023:latest
