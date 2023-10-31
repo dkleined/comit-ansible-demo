@@ -37,14 +37,6 @@
     - name: Install Docker Module for Python
       pip:
         name: docker
-    - name: "Creating folder and copying html file"
-      file:
-        path: "/myfile"
-        state: directory
-    - name: "Copying local files"
-      copy:
-        src: "index.html"
-        dest: "/myfile/"
 
     - name: Download the awscli bundle.
       get_url: url=https://s3.amazonaws.com/aws-cli/awscli-bundle.zip dest=/tmp/awscli-bundle.zip
@@ -62,14 +54,14 @@
       when: aws_cli_unarchive_installer.changed
 
     - name: Configure AWS.
-      shell: aws configure set {{ item.key }} {{ item.value }} --profile {{ aws_profile }}
+      shell: aws configure set {{item.key}} {{item.value}} --profile {{aws_profile}}
       no_log: False
       with_dict:
-        aws_access_key_id: "{{ aws_access_key }}"
-        aws_secret_access_key: "{{ aws_secret_key }}"
-        region: "{{ aws_region }}"
-        format: "{{ aws_format }}"
-      become_user: "{{ aws_system_user }}"
+        aws_access_key_id: "{{aws_access_key}}"
+        aws_secret_access_key: "{{aws_secret_key}}"
+        region: "{{aws_region}}"
+        format: "{{aws_format}}"
+      become_user: "{{aws_system_user}}"
       changed_when: false
     #- name: pull an image
     #  docker_image:
