@@ -37,3 +37,11 @@
     - name: Install Docker Module for Python
       pip:
         name: docker
+    - name: "Creating folder and copying html file"
+      file:
+        path: "/myfile"
+        state: directory
+    - name: "Copying local files"
+      copy:
+        src: "index.html"
+        dest: "/myfile/"
