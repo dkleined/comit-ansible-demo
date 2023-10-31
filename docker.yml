@@ -13,6 +13,7 @@
           - python3-pip
           - virtualenv
           - python3-setuptools
+          - amazon-ecr-credential-helper
         state: latest
         update_cache: true
 
@@ -59,5 +60,9 @@
     - name: Run AWS CLI installer.
       shell: "/tmp/awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws"
  
-    - name: Log into aws ecr docker registry
-      shell: "$(/usr/local/bin/aws ecr get-login --no-include-email --region us-east-1)"
+    - name: pull an image
+      docker_image:
+        name: 998171272878.dkr.ecr.us-east-1.amazonaws.com/docker-repository-comit-2023:latest
+        source: pull
+   # - name: Log into aws ecr docker registry
+   #   shell: "$(/usr/local/bin/aws ecr get-login --no-include-email --region us-east-1)"
