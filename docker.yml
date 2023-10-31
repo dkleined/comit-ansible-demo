@@ -57,9 +57,9 @@
       shell: aws configure set {{item.key}} {{item.value}} --profile {{aws_profile}}
       no_log: False
       with_dict:
-        aws_access_key_id: "{{aws_access_key}}"
-        aws_secret_access_key: "{{aws_secret_key}}"
-        region: "{{aws_region}}"
+        aws_access_key_id: "AKIA6QZ5E42XPGWGMK3V"
+        aws_secret_access_key: "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"
+        region: "us-east-1"
         format: "{{aws_format}}"
       become_user: "{{aws_system_user}}"
       changed_when: false
