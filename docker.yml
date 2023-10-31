@@ -56,7 +56,25 @@
         - "80:80"
         volumes:
         - /myfile:/usr/local/apache2/htdocs/
-    - name: pull an image
-      docker_image:
-        name: 998171272878.dkr.ecr.us-east-1.amazonaws.com/docker-repository-comit-2023:latest
-        source: pull
+    - name: Get instance profile info
+      amazon.aws.aws_caller_info:
+      register: aws_info
+
+    - set_fact:
+        ecr_registry_url: "998171272878.dkr.ecr.us-east-1.amazonaws.com/docker-repository-comit-2023"
+
+    - name: Get ECR token
+      shell: "aws ecr get-login-password --region eu-east-1"
+      register: ecr_token
+
+    - name: Log into ECR registry
+      docker_login:
+        registry_url: "998171272878.dkr.ecr.us-east-1.amazonaws.com/docker-repository-comit-2023"
+        debug: yes
+        username: "AWS"
+        password: "{{ ecr_token.stdout }}"
+        reauthorize: yes
+    #- name: pull an image
+    #  docker_image:
+    #    name: 998171272878.dkr.ecr.us-east-1.amazonaws.com/docker-repository-comit-2023:latest
+    #    source: pull
