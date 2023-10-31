@@ -60,8 +60,6 @@
         aws_access_key_id: "AKIA6QZ5E42XPGWGMK3V"
         aws_secret_access_key: "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"
         region: "us-east-1"
-        format: "{{aws_format}}"
-      become_user: "{{aws_system_user}}"
       changed_when: false
     #- name: pull an image
     #  docker_image:
