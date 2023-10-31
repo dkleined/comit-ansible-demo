@@ -1,7 +1,7 @@
 ---
 - hosts: ec2-instance
 
-  become: true
+  become: false
   tasks:
     - name: Install required system packages
       apt:
