@@ -45,14 +45,19 @@
       copy:
         src: "index.html"
         dest: "/myfile/"
-    - name: Creating container using HTTPD Image
-      docker_container:
-        name: "MyWebServer3"
-        image: "httpd"
-        state: started
-        exposed_ports:
-        - "80"
-        ports:
-        - "80:80"
-        volumes:
-        - /myfile:/usr/local/apache2/htdocs/
+    - name: Download AWS CLI bundle.
+      shell: "cd /tmp && rm -rf /tmp/awscli* && curl 'https://s3.amazonaws.com/aws-cli/awscli-bundle.zip' -o 'awscli-bundle.zip'"
+ 
+    - name: Update repositories cache and install "unzip" package
+      apt:
+        name: unzip
+        update_cache: yes
+ 
+    - name: Unzip AWS CLI bundle.
+      shell: "cd /tmp && unzip awscli-bundle.zip"
+ 
+    - name: Run AWS CLI installer.
+      shell: "/tmp/awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws"
+ 
+    - name: Log into aws ecr docker registry
+      shell: "$(/usr/local/bin/aws ecr get-login --no-include-email --region us-east-1)"
